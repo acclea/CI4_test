@@ -22,7 +22,8 @@ class App extends BaseConfig
 	|
 	*/
 //	public $baseURL = 'http://localhost:8080';
-	public $baseURL = 'http://test.oaci4.com/';
+	public $baseURL     = 'http://test.oaci4.com/';
+	public $weblibURL   = 'http://test.oaci4.com/weblic/';
 
 	/*
 	|--------------------------------------------------------------------------

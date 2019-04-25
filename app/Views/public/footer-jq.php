@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<?=site_url('weblib/')?>js/jquery.js"></script>

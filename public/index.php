@@ -8,6 +8,13 @@ if (phpversion() < $minPHPVersion)
 }
 unset($minPHPVersion);
 
+/**
+ * -------------- ENVIRONMENT --------------
+ * setting current environment
+ * -------------- ENVIRONMENT --------------
+ */
+define('ENVIRONMENT', 'development');
+
 // Path to the front controller (this file)
 define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR);
 
