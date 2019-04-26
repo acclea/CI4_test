@@ -6,20 +6,13 @@
  * Time: 16:42
  * Describe : 自定义方法
  */
+namespace App\Libraries;
 
-use CodeIgniter\Config\Config;
-use CodeIgniter\Files\Exceptions\FileNotFoundException;
-use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\HTTP\RequestInterface;
-use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\HTTP\URI;
 use CodeIgniter\Config\App;
 use CodeIgniter\Config\Database;
 use CodeIgniter\Config\Logger;
-use CodeIgniter\Config\Services;
-use Tests\Support\Log\TestLogger;
-use Zend\Escaper\Escaper;
-use CodeIgniter\system\Common;
+use CodeIgniter\Common;
+use CodeIgniter\Libraries;
 
 
 if (! function_exists('console'))
@@ -53,7 +46,7 @@ if (! function_exists('p'))
      *
      * @describe    php封装格式化print_r---debug
      */
-    function p($data){
+    function p(string $data){
         echo '<pre>';
         print_r($data);
         echo '</pre>';

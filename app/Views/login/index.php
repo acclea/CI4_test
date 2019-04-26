@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>登录</title>
-    <?=view("public/top-css")?>
+<?=view("public/top")?>
+<?=view("public/login-css")?>
 </head>
 <body>
 <div class="div_top">OA日常办公管理系统</div>
@@ -66,6 +62,7 @@
         var loginFunc   = function (name,pass) {
             if(!name || !pass){return false;}
             $.post("<?=site_url('Ajax/loginDo')?>",{name:name,pass:pass},function (ref) {
+                console.log(ref);return false;
                 if(!ref){return false;}
                 var re = JSON.parse(ref);
 
