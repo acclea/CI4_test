@@ -7,8 +7,7 @@
  */
 
 namespace App\Controllers;
-use function App\Libraries;
-use CodeIgniter\Controllers;
+use App\Models\AdminModel;
 
 
 class Ajax extends BaseController {
@@ -47,6 +46,9 @@ class Ajax extends BaseController {
             );
             echo json_encode($refArr,JSON_UNESCAPED_UNICODE);
         }
+
+        $adminModel = new AdminModel();
+        $adminRow  = $adminModel->adminRow("1=1","id");
 
         $refArr     = array(
             'code'  => 0,

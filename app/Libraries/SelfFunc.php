@@ -6,17 +6,9 @@
  * Time: 16:42
  * Describe : 自定义方法
  */
-namespace App\Libraries;
+namespace App\Library;
 
-use CodeIgniter\Config\App;
-use CodeIgniter\Config\Database;
-use CodeIgniter\Config\Logger;
-use CodeIgniter\Common;
-use CodeIgniter\Libraries;
-
-
-if (! function_exists('console'))
-{
+class SelfFunc{
     /**
      *
      * Examples:
@@ -33,10 +25,7 @@ if (! function_exists('console'))
             echo("<script>console.log('".$data."');</script>");
         }
     }
-}
 
-if (! function_exists('p'))
-{
     /**
      *
      * Examples:
@@ -52,3 +41,4 @@ if (! function_exists('p'))
         echo '</pre>';
     }
 }
+

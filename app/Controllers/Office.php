@@ -2,20 +2,23 @@
 /**
  * Created by PhpStorm.
  * User: leshu
- * Date: 2019/4/25
- * Time: 14:53
+ * Date: 2019/4/26
+ * Time: 10:43
  */
 
 namespace App\Controllers;
-use CodeIgniter\Controller;
-use CodeIgniter\Libraries;
 
-class Login extends Controller{
+use CodeIgniter\Config\App;
+use App\Controllers;
+use CodeIgniter\App\Libraries;
+use App\Models\OfficeModel;
+
+class Office extends BaseController {
 
     /**
      * -----------------------------------
      * @Function        init
-     * @Date             2019-04-25
+     * @Date             2019-04-26
      * @Author           Acclea
      * @Describe         初始化
      * -----------------------------------
@@ -27,42 +30,18 @@ class Login extends Controller{
 
     //--------------------------------------------------------------------
 
-
     /**
      * -----------------------------------
      * @Function        index
-     * @Date             2019-04-25
+     * @Date             2019-04-26
      * @Author           Acclea
      * @Describe         默认入口
      * -----------------------------------
      */
     public function index(){
-        $ref    = array('templateTitle'=>"登录");
-        return view('login/index',$ref);
-    }
-
-    //--------------------------------------------------------------------
-
-
-    /**
-     * -----------------------------------
-     * @Function        logout
-     * @Date             2019-04-26
-     * @Author           Acclea
-     * @Describe         登出
-     * -----------------------------------
-     */
-    public function logout(){
-        $refArr     = array(
-            'code'  => 0,
-            'msg'   => "OK",
-            'data'  =>  array(
-                'url'   => site_url('Login/index'),
-            ),
-        );
-
-//        echo json_encode($refArr,JSON_UNESCAPED_UNICODE);
-        header("Location:".site_url("Login/index"));
+        SelfFunc::p($this);
+        $ref    = array('templateTitle'=>"工作日志");
+        return view('office/index',$ref);
     }
 
     //--------------------------------------------------------------------

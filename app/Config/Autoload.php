@@ -53,7 +53,6 @@ class Autoload extends \CodeIgniter\Config\AutoloadConfig
 			'Config'      => APPPATH . 'Config',
 			APP_NAMESPACE => APPPATH,                // For custom namespace
 			'App'         => APPPATH,                // To ensure filters, etc still found,
-			'Database'         => APPPATH,                // To load db,
 		];
 
 		/**
@@ -72,7 +71,9 @@ class Autoload extends \CodeIgniter\Config\AutoloadConfig
 		 *       'MyClass'   => '/path/to/class/file.php'
 		 *   ];
 		 */
-		$classmap = [];
+		$classmap = [
+		    'SelfFunc'      => APPPATH ."Libraries/SelfFunc.php",
+        ];
 
 		//--------------------------------------------------------------------
 		// Do Not Edit Below This Line

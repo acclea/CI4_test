@@ -62,7 +62,6 @@
         var loginFunc   = function (name,pass) {
             if(!name || !pass){return false;}
             $.post("<?=site_url('Ajax/loginDo')?>",{name:name,pass:pass},function (ref) {
-                console.log(ref);return false;
                 if(!ref){return false;}
                 var re = JSON.parse(ref);
 
