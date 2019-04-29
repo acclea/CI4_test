@@ -1,4 +1,5 @@
-<?php namespace App\Controllers;
+<?php
+namespace App\Controllers;
 
 /**
  * Class BaseController
@@ -22,8 +23,6 @@ use CodeIgniter\Cache\CacheFactory;
 use CodeIgniter\Cache\CacheInterface;
 use CodeIgniter\Config\Services;
 use Config\Database;
-//use CodeIgniter\Database\Database;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class BaseController extends Controller{
 

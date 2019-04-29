@@ -15,7 +15,7 @@ class Home extends BaseController{
      * @Describe         加载系统需要的配置
      * -----------------------------------
      */
-//    public static $sysConf = array();
+
 
     /**
      * -----------------------------------
@@ -46,7 +46,7 @@ class Home extends BaseController{
 	public function index(){
         $ref    = array();
         $ref['templateTitle']   = "OA管理系统";
-        $ref['weblibUrl']       = self::$sysConf;
+        $ref['weblibUrl']       = self::$sysConf['app']->weblibURL;
 
         return view('home/index',$ref);
 	}
