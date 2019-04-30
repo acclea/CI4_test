@@ -72,7 +72,7 @@ class Autoload extends \CodeIgniter\Config\AutoloadConfig
 		 *   ];
 		 */
 		$classmap = [
-		    'SelfFunc'      => APPPATH ."Libraries/SelfFunc.php",
+//		    'SelfFunc'      => APPPATH ."Libraries/SelfFunc.php",
         ];
 
 		//--------------------------------------------------------------------

@@ -6,10 +6,10 @@
  * Time: 17:19
  */
 namespace App\Controllers;
+
 use CodeIgniter\Controller;
 use App\Models\AdminModel;
 use CodeIgniter\API\ResponseTrait;
-
 use Config\Autoload;
 use Config\App;
 use Config\Cache;
@@ -17,6 +17,7 @@ use CodeIgniter\Cache\CacheFactory;
 use CodeIgniter\Cache\CacheInterface;
 use CodeIgniter\Config\Services;
 use Config\Database;
+use App\Libraries\SelfFunc;
 
 
 class Ajax extends Controller {
@@ -74,10 +75,7 @@ class Ajax extends Controller {
             $services           = new Services();
 //            $sessionConn        = $services->session();
             self::$sessionClass         = $services->session();
-            self::$sessionClass->start();
         }
-
-//        d(self::$sessionClass);die;
 
     }
 
@@ -96,56 +94,37 @@ class Ajax extends Controller {
      */
     public function loginDo(){
 
+        //加载自定义方法
+        $selfFunc   = new SelfFunc();
+
         //获取通过get提交的数据，
 //        $getData   = $this->request->getGet();
 
         //获取通过post提交的数据，
         $postData   = $this->request->getPost();
         if(!isset($postData['name']) OR !isset($postData['pass'])){
-            $refArr     = array(
-                'code'  => -3,
-                'msg'   => "非法请求",
-            );
-            die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
+            $selfFunc->refJson(-3,"非法请求");
         }
 
         $name   = $postData['name'];
         $pass   = $postData['pass'];
 
-        if(!$name OR !$pass){
-            $refArr     = array(
-                'code'  => -4,
-                'msg'   => "用户和密码不能为空",
-            );
-            die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
-        }
+        if(!$name OR !$pass){ $selfFunc->refJson(-4,"用户和密码不能为空"); }
 
         //如果5min内密码连续输入错误5次，则10min内不允许登陆
-        $cacheKeyAdminBan   = "ci4_test_admin_ban.".md5($name);
+        $cacheKeyAdminBan   = "ci4_test_admin_ban_".md5($name);
         $isBan      = self::$redisConn->get($cacheKeyAdminBan);
-        if($isBan){
-            $refArr     = array(
-                'code'  => -5,
-                'msg'   => "该用户已禁止登陆，请10分钟后尝试",
-            );
-            die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
-        }
+        if($isBan){ $selfFunc->refJson(-5,"该用户已禁止登陆，请10分钟后尝试"); }
 
         //从数据库读取数据,test789
         $adminModel = new AdminModel();
         $adminRow  = $adminModel->adminRow("name = '".$name."'","id,name,status,pass");
 
-        if(!$adminRow){
-            $refArr     = array(
-                'code'  => -6,
-                'msg'   => "用户不存在",
-            );
-            die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
-        }
+        if(!$adminRow){ $selfFunc->refJson(-6,"用户不存在"); }
 
         //验证密码
         if(sha1(md5($pass)) != $adminRow['pass']){
-            $cacheKeyAdminPass  = "ci4_test_admin_pass.".md5($name);
+            $cacheKeyAdminPass  = "ci4_test_admin_pass_".md5($name);
             $isWrongPass    = self::$redisConn->get($cacheKeyAdminPass);
             if(!$isWrongPass){$isWrongPass = 0;}
             $isWrongPass++;
@@ -153,34 +132,71 @@ class Ajax extends Controller {
             if($isWrongPass == 5){
                 $cacheKeyAdminBanExp    = 10*60;
                 self::$redisConn->save($cacheKeyAdminBan,$name,$cacheKeyAdminBanExp);
-                $refArr     = array(
-                    'code'  => -5,
-                    'msg'   => "该用户已禁止登陆，请10分钟后尝试",
-                );
-                die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
+                $selfFunc->refJson(-5,"该用户已禁止登陆，请10分钟后尝试");
             }
 
             $cacheKeyAdminPassExp    = 5*60;
             self::$redisConn->save($cacheKeyAdminPass,$isWrongPass,$cacheKeyAdminPassExp);
-            $refArr     = array(
-                'code'  => -7,
-                'msg'   => "密码错误，请重新输入",
-            );
-            die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
+            $selfFunc->refJson(-7,"密码错误，请重新输入");
         }
 
-        //密码正确，修改登陆时间，记录相关日志
+        //密码正确，修改登陆时间，记录相关日志，保存登陆session，cache
+        $curTime    = time();
+
+        //update
+        $adminModel->adminUpdate(array("uptime"=>$curTime),array("id"=>$adminRow['id']));
+//        $adminModel->adminUpdate("uptime = $curTime","id = ".$adminRow['id']);  //  由于Model中指定是array 类型，所以不能使用string
+
+        //log
+        $logContent = "$name 管理员登陆，时间：".date("Y-m-d H:i:s");
+        $this->adminLogIns(3, $logContent, $curTime);
+
+        //redis
+        $cacheKeyAdminInfo      = "ci4_test_admin_info_".$adminRow['id'];
+        $cacheKeyAdminInfoExp   = 60*60*2;
+        self::$redisConn->save($cacheKeyAdminInfo,$adminRow,$cacheKeyAdminInfoExp);
+
+        //session
+        self::$sessionClass->set($adminRow);
+
 
         $refArr     = array(
-            'code'  => 0,
-            'msg'   => "OK",
-            'data'  =>  array(
-                'url'   => site_url('Home/index'),
-            ),
+            'url'   => site_url('Home/index'),
+        );
+        $selfFunc->refJson(0,"OK",$refArr);
+
+    }
+
+    //--------------------------------------------------------------------
+
+
+    /**
+     * -----------------------------------
+     * @Function            adminLogIns
+     * @Date                2019-04-29
+     * @Author              Acclea
+     * @Param     int       $operaId   操作id（1增——a，2删——d，3查——s，4改——u）
+     * @Param     string    $logContent   操作内容
+     * @Param     int       $addtime   操作时间
+     * @Return              bool
+     * -----------------------------------
+     */
+    public function adminLogIns(int $operaId,string $logContent,int $addtime) :bool {
+        if(!$operaId OR !$logContent){return false;}
+        $adminModel = new AdminModel();
+
+        //获取IP
+        $ip     = $this->request->getIPAddress();
+        if(!$this->request->isValidIP($ip)){ echo "IP Is Not Valid";return false; }
+
+        $logArr     = array(
+            "describe"  => $logContent,
+            "opera_id"  => $operaId,
+            "opera_ip"  => $ip,
+            "addtime"   => $addtime,
         );
 
-        die(json_encode($refArr,JSON_UNESCAPED_UNICODE));
-
+        return  $adminModel->adminLogInsert($logArr);
     }
 
     //--------------------------------------------------------------------

@@ -2,8 +2,6 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controllers;
-use App\Library;
-use App\Models\AdminModel;
 
 
 class Home extends BaseController{
@@ -62,7 +60,9 @@ class Home extends BaseController{
      * -----------------------------------
      */
 	public function home(){
-        $ref    = array('templateTitle'=>"OA管理系统");
+        $ref    = array();
+        $ref['templateTitle']   = "OA管理系统";
+        $ref['weblibUrl']       = self::$sysConf['app']->weblibURL;
         return view('home/home',$ref);
 	}
 
